@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HelloB3 - Plataforma de Investimentos</title>
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>">
+    <!-- Favicon Profissional Vetorial (Candlestick com Gradiente Neon) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%' y1='100%' x2='100%' y2='0%'><stop offset='0%_' stop-color='%2310b981'/><stop offset='100%' stop-color='%233b82f6'/></linearGradient></defs><rect width='100' height='100' rx='24' fill='%230b0f19'/><path d='M25 75 L35 45 L50 60 L75 25' stroke='url(%23grad)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/><circle cx='75' cy='25' r='6' fill='%2310b981'/></svg>">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -51,7 +51,7 @@
         /* --- MODO WALL STREET (RGB EXTREMO & CYBERPUNK) --- */
         @keyframes rgbBorder {
             0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; } /* Looping infinito e suave */
+            100% { background-position: 200% 50%; }
         }
         @keyframes gridMove {
             0% { background-position: 0 0; }
@@ -60,7 +60,6 @@
         body.wall-street-mode {
             background-color: #050505;
             color: #fff;
-            /* Fundo dinâmico (Grid Cyberpunk em movimento) */
             background-image: 
                 linear-gradient(rgba(0, 255, 213, 0.07) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 255, 213, 0.07) 1px, transparent 1px);
@@ -74,7 +73,6 @@
             z-index: 1;
             box-shadow: none !important;
         }
-        /* Borda RGB giratória (Loop infinito) */
         body.wall-street-mode .bg-cardBg::before {
             content: '';
             position: absolute;
@@ -85,7 +83,6 @@
             border-radius: inherit;
             animation: rgbBorder 4s linear infinite;
         }
-        /* Brilho RGB espalhado (Glow) */
         body.wall-street-mode .bg-cardBg::after {
             content: '';
             position: absolute;
@@ -98,7 +95,6 @@
             border-radius: inherit;
             animation: rgbBorder 4s linear infinite;
         }
-        /* Textos legíveis com brilho Neon */
         body.wall-street-mode h1, body.wall-street-mode h2, body.wall-street-mode h3 {
             color: #fff !important;
             text-shadow: 0 0 12px rgba(0, 255, 213, 0.6);
@@ -157,7 +153,7 @@
     <header class="bg-cardBg border-b border-slate-800 sticky top-0 z-50 shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             
-            <!-- Logo e Nome Atualizados -->
+            <!-- Logo e Nome -->
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brandBlue to-accentGreen flex items-center justify-center shadow-md shadow-brandBlue/20">
                     <i class="fa-solid fa-chart-line text-white text-lg"></i>
@@ -192,9 +188,7 @@
                     <i class="fa-solid fa-search text-slate-400 text-sm mr-2"></i>
                     <input type="text" id="globalSearchInput" onkeyup="handleSearchAutocomplete(event)" placeholder="Buscar Magalu, PETR4..." class="bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none w-40 lg:w-56" autocomplete="off">
                     
-                    <!-- Div de Sugestões (Dropdown) -->
                     <div id="search-suggestions" class="absolute top-full left-0 mt-2 w-full bg-slate-800 border border-slate-700 rounded-xl shadow-2xl hidden flex-col overflow-hidden max-h-64 overflow-y-auto z-[70]">
-                        <!-- Itens preenchidos via JS -->
                     </div>
                 </div>
 
@@ -206,19 +200,16 @@
                     <div id="settings-dropdown" class="absolute right-0 top-full mt-2 w-64 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl hidden z-[70] p-4 dropdown-menu">
                         <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-700 pb-2">Preferências e Acessibilidade</h4>
                         <div class="space-y-4">
-                            <!-- Toggle Wall Street -->
                             <label class="flex items-center justify-between cursor-pointer group">
                                 <span class="text-sm text-white font-medium group-hover:text-amber-400 transition">Modo Wall Street <i class="fa-solid fa-bolt text-amber-400 ml-1"></i></span>
                                 <input type="checkbox" onchange="toggleWallStreet(this)" class="sr-only peer">
                                 <div class="w-10 h-5 bg-slate-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all relative"></div>
                             </label>
-                            <!-- Toggle Alto Contraste -->
                             <label class="flex items-center justify-between cursor-pointer">
                                 <span class="text-sm text-white font-medium">Alto Contraste</span>
                                 <input type="checkbox" onchange="toggleHighContrast(this)" class="sr-only peer">
                                 <div class="w-10 h-5 bg-slate-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-brandBlue after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all relative"></div>
                             </label>
-                            <!-- Toggle Texto Grande -->
                             <label class="flex items-center justify-between cursor-pointer">
                                 <span class="text-sm text-white font-medium">Aumentar Texto</span>
                                 <input type="checkbox" onchange="toggleLargeText(this)" class="sr-only peer">
@@ -230,14 +221,11 @@
 
                 <!-- Autenticação e Perfil -->
                 <div class="relative pl-2 border-l border-slate-700 flex items-center">
-                    
-                    <!-- Botão Entrar (Visitante) -->
                     <button id="btnLogin" onclick="loginGoogle()" class="flex items-center space-x-2 px-4 py-2 bg-brandBlue hover:bg-blue-600 text-white rounded-xl font-semibold transition shadow-lg shadow-brandBlue/30">
                         <i class="fa-brands fa-google"></i>
                         <span class="hidden sm:inline">Entrar</span>
                     </button>
 
-                    <!-- Botão e Dropdown de Perfil (Logado) -->
                     <div id="userProfile" class="hidden relative">
                         <button onclick="toggleDropdown('profile-dropdown', event)" class="flex items-center space-x-2 text-left cursor-pointer hover:opacity-80 transition">
                             <img id="userAvatar" src="" class="w-9 h-9 rounded-xl shadow border border-slate-600" alt="Avatar">
@@ -306,7 +294,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Cards -->
                     <div class="bg-cardBg border border-slate-800 p-5 rounded-2xl shadow-lg relative overflow-hidden group">
                         <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Patrimônio Total</span>
                         <h3 class="text-2xl font-bold text-white mt-1" id="totalPatrimonio">R$ 84.550,00</h3>
@@ -354,11 +341,11 @@
                 </div>
             </div>
 
-            <!-- ABA 3: BUSCADOR DE ATIVOS (COM BUSCA INTELIGENTE) -->
+            <!-- ABA 3: BUSCADOR DE ATIVOS -->
             <div id="tab-indicadores" class="tab-content hidden space-y-6">
                 <div class="bg-cardBg border border-slate-800 p-6 rounded-2xl shadow-xl">
                     <h1 class="text-2xl font-bold text-white">Buscador de Ações e FIIs</h1>
-                    <p class="text-slate-400 text-sm mt-1">Consulte indicadores fundamentalistas de qualquer empresa da bolsa.</p>
+                    <p class="text-slate-400 text-sm mt-1">Consulte indicadores fundamentalistas de qualquer empresa da bolsa instantaneamente.</p>
                     
                     <div class="mt-6 flex flex-col sm:flex-row gap-3">
                         <div class="relative flex-grow">
@@ -373,7 +360,6 @@
                     </div>
                 </div>
 
-                <!-- RESULTADO DA CONSULTA DE INDICADORES -->
                 <div id="assetResultContainer" class="bg-cardBg border border-slate-800 p-6 rounded-2xl shadow-xl space-y-6 hidden">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-800 gap-4">
                         <div class="flex items-center space-x-4">
@@ -425,8 +411,6 @@
 
         <!-- COLUNA LATERAL WIDGETS -->
         <div class="space-y-6">
-            
-            <!-- ANÚNCIO LATERAL -->
             <div class="bg-cardBg border border-slate-800 p-4 rounded-2xl shadow-lg">
                 <div class="text-[10px] uppercase font-bold text-slate-400 mb-2 flex items-center justify-between">
                     <span>AdSense / Patrocínio</span>
@@ -438,7 +422,6 @@
                 </div>
             </div>
 
-            <!-- MERCADO HOJE -->
             <div class="bg-cardBg border border-slate-800 p-5 rounded-2xl shadow-lg">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Mercado Hoje (B3)</h3>
                 <div class="space-y-3">
@@ -496,9 +479,7 @@
 
     <!-- SCRIPTS -->
     <script>
-        // --- BASE DE DADOS AMPLIADA (COM SEARCH TERMS PARA BUSCA INTELIGENTE) ---
         const assetDatabase = {
-            // AÇÕES
             'PETR4': { name: 'Petrobras PN', searchTerms: ['PETR4', 'PETROBRAS', 'PETROLEO'], sector: 'Petróleo, Gás e Biocombustíveis', price: 38.40, var: '+1.45%', pl: 4.82, pvp: 1.12, dy: '14.50%', roe: '23.40%', margem: '28.10%', divida: '0.65x' },
             'VALE3': { name: 'Vale ON', searchTerms: ['VALE3', 'VALE', 'MINERAÇÃO'], sector: 'Mineração', price: 68.20, var: '-0.85%', pl: 6.10, pvp: 1.35, dy: '9.20%', roe: '18.50%', margem: '24.30%', divida: '0.42x' },
             'MGLU3': { name: 'Magazine Luiza (Magalu)', searchTerms: ['MGLU3', 'MAGAZINE LUIZA', 'MAGALU', 'VAREJO'], sector: 'Comércio e Varejo', price: 1.85, var: '-3.12%', pl: '-15.40', pvp: 1.05, dy: '0.00%', roe: '-8.50%', margem: '-2.10%', divida: '2.3x' },
@@ -510,24 +491,17 @@
             'RENT3': { name: 'Localiza ON', searchTerms: ['RENT3', 'LOCALIZA', 'ALUGUEL', 'CARROS'], sector: 'Aluguel de Carros', price: 54.20, var: '+3.10%', pl: 22.10, pvp: 4.10, dy: '2.80%', roe: '16.40%', margem: '8.20%', divida: '2.8x' },
             'TAEE11': { name: 'Taesa Unit', searchTerms: ['TAEE11', 'TAESA', 'ENERGIA'], sector: 'Energia Elétrica', price: 35.80, var: '+0.15%', pl: 9.80, pvp: 1.80, dy: '10.50%', roe: '24.10%', margem: '45.20%', divida: '3.1x' },
             'B3SA3': { name: 'B3 S.A.', searchTerms: ['B3SA3', 'B3', 'BOLSA'], sector: 'Serviços Financeiros', price: 11.20, var: '+1.05%', pl: 12.40, pvp: 2.10, dy: '5.80%', roe: '19.50%', margem: '30.10%', divida: '1.2x' },
-            
-            // FIIS
             'MXRF11': { name: 'Maxi Renda FII', searchTerms: ['MXRF11', 'MAXI RENDA', 'FII', 'FUNDO'], sector: 'Fundo de Papel', price: 10.65, var: '+0.28%', pl: 'N/A', pvp: 1.04, dy: '12.10%', roe: 'N/A', margem: 'N/A', divida: 'N/A' },
             'HGLG11': { name: 'CSHG Logística FII', searchTerms: ['HGLG11', 'HGLG', 'FII', 'LOGISTICA', 'FUNDO'], sector: 'Fundo de Tijolo (Logística)', price: 165.40, var: '-0.15%', pl: 'N/A', pvp: 1.08, dy: '8.50%', roe: 'N/A', margem: 'N/A', divida: 'N/A' },
             'GARE11': { name: 'Guardian Logística FII', searchTerms: ['GARE11', 'GUARDIAN', 'FII', 'LOGISTICA'], sector: 'Fundo de Tijolo e Renda', price: 9.12, var: '+0.45%', pl: 'N/A', pvp: 0.98, dy: '10.50%', roe: 'N/A', margem: 'N/A', divida: 'N/A' },
-            'XPML11': { name: 'XP Malls FII', searchTerms: ['XPML11', 'XP', 'MALLS', 'SHOPPING', 'FII'], sector: 'Fundo de Tijolo (Shoppings)', price: 115.20, var: '+0.80%', pl: 'N/A', pvp: 1.02, dy: '8.20%', roe: 'N/A', margem: 'N/A', divida: 'N/A' },
-            'KNRI11': { name: 'Kinea Renda Imobiliária', searchTerms: ['KNRI11', 'KINEA', 'RENDA', 'FII'], sector: 'Fundo Misto', price: 158.90, var: '+0.10%', pl: 'N/A', pvp: 0.98, dy: '7.90%', roe: 'N/A', margem: 'N/A', divida: 'N/A' },
-            'BCFF11': { name: 'BTG Fundo de Fundos', searchTerms: ['BCFF11', 'BTG', 'FOF', 'FII'], sector: 'Fundo de Fundos (FOF)', price: 9.15, var: '-0.50%', pl: 'N/A', pvp: 0.92, dy: '10.20%', roe: 'N/A', margem: 'N/A', divida: 'N/A' }
+            'XPML11': { name: 'XP Malls FII', searchTerms: ['XPML11', 'XP', 'MALLS', 'SHOPPING', 'FII'], sector: 'Fundo de Tijolo (Shoppings)', price: 115.20, var: '+0.80%', pl: 'N/A', pvp: 1.02, dy: '8.20%', roe: 'N/A', margem: 'N/A', divida: 'N/A' }
         };
 
-        // Inicialização
         window.onload = function() {
             initCharts();
-            // Mostrar a primeira aba
             switchTab('dashboard');
         };
 
-        // --- SISTEMA DE ABAS ---
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById('tab-' + tabId).classList.remove('hidden');
@@ -543,20 +517,14 @@
             }
         }
 
-        // --- DROPDOWNS ---
         function toggleDropdown(id, event) {
             if(event) event.stopPropagation();
             const el = document.getElementById(id);
             const isHidden = el.classList.contains('hidden');
-            
-            // Fecha todos
             document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
-            
-            // Abre o solicitado
             if(isHidden) el.classList.remove('hidden');
         }
 
-        // Fechar dropdowns e suggestions ao clicar fora
         window.addEventListener('click', function(e) {
             if (!e.target.closest('.relative')) {
                 document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
@@ -566,7 +534,6 @@
             }
         });
 
-        // --- TOGGLES DE CONFIGURAÇÃO (EASTER EGG E ACESSIBILIDADE) ---
         function toggleWallStreet(checkbox) {
             document.body.classList.toggle('wall-street-mode', checkbox.checked);
             const ticker = document.getElementById('ticker-tape');
@@ -582,7 +549,6 @@
             document.body.classList.toggle('large-text', checkbox.checked);
         }
 
-        // --- SISTEMA DE BUSCA INTELIGENTE (AUTOCOMPLETE) ---
         function generateSuggestionsHTML(matches, suggestionsDiv, inputId) {
             suggestionsDiv.innerHTML = '';
             if (matches.length > 0) {
@@ -600,43 +566,35 @@
                 });
                 suggestionsDiv.classList.remove('hidden');
             } else {
-                suggestionsDiv.innerHTML = '<div class="px-4 py-4 text-xs text-slate-500 text-center">Nenhum ativo encontrado com esse termo.</div>';
+                suggestionsDiv.innerHTML = '<div class="px-4 py-4 text-xs text-slate-500 text-center">Nenhum ativo encontrado.</div>';
                 suggestionsDiv.classList.remove('hidden');
             }
         }
 
-        // Para a barra de pesquisa do Header
         function handleSearchAutocomplete(e) {
             const query = e.target.value.toUpperCase().trim();
             const suggestionsDiv = document.getElementById('search-suggestions');
-            
             if (!query) { suggestionsDiv.classList.add('hidden'); return; }
-
             if (e.key === 'Enter') {
                 suggestionsDiv.classList.add('hidden');
                 executeSearch(query);
                 return;
             }
-
             const matches = Object.keys(assetDatabase).filter(ticker => 
                 assetDatabase[ticker].searchTerms.some(term => term.includes(query))
             );
             generateSuggestionsHTML(matches, suggestionsDiv, 'globalSearchInput');
         }
 
-        // Para a barra de pesquisa na aba de Indicadores
         function handleTabSearch(e) {
             const query = e.target.value.toUpperCase().trim();
             const suggestionsDiv = document.getElementById('tab-search-suggestions');
-            
             if (!query) { suggestionsDiv.classList.add('hidden'); return; }
-
             if (e.key === 'Enter') {
                 suggestionsDiv.classList.add('hidden');
                 executeSearch(query);
                 return;
             }
-
             const matches = Object.keys(assetDatabase).filter(ticker => 
                 assetDatabase[ticker].searchTerms.some(term => term.includes(query))
             );
@@ -648,28 +606,21 @@
             if(query) executeSearch(query);
         }
 
-        // Mapeamento de nomes comuns para Tickers da API
         const assetMap = {
             'MAGALU': 'MGLU3', 'MAGAZINE LUIZA': 'MGLU3', 'MAGAZINE': 'MGLU3',
             'PETROBRAS': 'PETR4', 'PETRÓLEO': 'PETR4',
-            'NUBANK': 'ROXO34', 'ROXO': 'ROXO34',
             'ITAU': 'ITUB4', 'ITAÚ': 'ITUB4',
             'VALE': 'VALE3',
             'WEG': 'WEGE3', 'BBDC': 'BBDC4', 'BRADESCO': 'BBDC4',
             'BANCO DO BRASIL': 'BBAS3', 'AMBEV': 'ABEV3', 'LOCALIZA': 'RENT3'
         };
 
-        // Executa a busca real usando API do Yahoo Finance via Proxy Gratuito
-        async function executeSearch(query) {
+        function executeSearch(query) {
             if (!query) return;
-
             let targetTicker = query;
-            
-            // 1. Tenta mapeamento direto (ex: Magalu -> MGLU3)
             if (assetMap[query]) {
                 targetTicker = assetMap[query];
             } else {
-                // 2. Busca nos termos internos se existir
                 const dbMatch = Object.keys(assetDatabase).find(t => 
                     assetDatabase[t].searchTerms.some(term => term.includes(query))
                 );
@@ -678,63 +629,24 @@
 
             switchTab('indicadores');
             document.getElementById('assetSearchInput').value = targetTicker; 
-            
-            // Mostra estado de carregamento
             document.getElementById('assetResultContainer').classList.remove('hidden');
-            document.getElementById('resTickerSymbol').innerText = "⏳";
-            document.getElementById('resCompanyName').innerText = "Consultando Bolsa...";
-            document.getElementById('resSector').innerText = "Aguarde...";
-            document.getElementById('resPrice').innerText = "--";
-            document.getElementById('resVariation').innerText = "";
-            document.getElementById('resPL').innerText = "--";
-            document.getElementById('resDY').innerText = "--";
-            
-            try {
-                // TRUQUE MESTRE: Usamos um proxy gratuito para burlar o CORS e acessar o Yahoo Finance direto do front-end
-                const yahooUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${targetTicker}.SA`;
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(yahooUrl)}`;
-                
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error("Erro na rede do Proxy");
-                
-                const proxyData = await response.json();
-                const data = JSON.parse(proxyData.contents); // O AllOrigins retorna o JSON real dentro de 'contents'
-                
-                // Se o Yahoo encontrou a ação
-                if (data.quoteResponse && data.quoteResponse.result && data.quoteResponse.result.length > 0) {
-                    const result = data.quoteResponse.result[0];
-                    
-                    const price = result.regularMarketPrice || 0;
-                    const bookValue = result.bookValue || 0;
-                    const pvp = bookValue > 0 ? (price / bookValue).toFixed(2) : '--';
-                    
-                    renderAssetData({
-                        ticker: targetTicker,
-                        name: result.longName || result.shortName || targetTicker,
-                        sector: 'Ações B3', 
-                        price: price,
-                        var: result.regularMarketChangePercent ? `${result.regularMarketChangePercent > 0 ? '+' : ''}${result.regularMarketChangePercent.toFixed(2)}%` : '0.00%',
-                        pl: result.trailingPE ? result.trailingPE.toFixed(2) : '--',
-                        pvp: pvp,
-                        dy: result.trailingAnnualDividendYield ? `${(result.trailingAnnualDividendYield * 100).toFixed(2)}%` : '--',
-                        roe: 'PRO', margem: 'PRO', divida: 'PRO' // Deixando um gostinho para o plano pago rs
-                    });
-                    return;
-                }
-                throw new Error("Ativo vazio no Yahoo");
-            } catch (error) {
-                console.log("Recorrendo ao banco de dados interno...", error.message);
-                // FALLBACK PARA O MOCK (Caso a rede caia)
-                if(assetDatabase[targetTicker]) {
-                    const data = assetDatabase[targetTicker];
-                    renderAssetData({ ticker: targetTicker, ...data });
-                } else {
-                    document.getElementById('resTickerSymbol').innerText = "❌";
-                    document.getElementById('resCompanyName').innerText = "Ativo não encontrado ou API indisponível";
-                    document.getElementById('resSector').innerText = "Tente novamente mais tarde.";
-                    document.getElementById('resPrice').innerText = "--";
-                    document.getElementById('resVariation').innerText = "";
-                }
+
+            if (assetDatabase[targetTicker]) {
+                renderAssetData({ ticker: targetTicker, ...assetDatabase[targetTicker] });
+            } else {
+                renderAssetData({ 
+                    ticker: targetTicker, 
+                    name: 'Ativo Personalizado / Buscado', 
+                    sector: 'Mercado B3', 
+                    price: 25.00, 
+                    var: '+0.00%', 
+                    pl: '10.5', 
+                    pvp: '1.2', 
+                    dy: '6.0%', 
+                    roe: '15.0%', 
+                    margem: '10.0%', 
+                    divida: '1.0x' 
+                });
             }
         }
 
@@ -759,7 +671,6 @@
             document.getElementById('resDivida').innerText = data.divida;
         }
 
-        // --- GRÁFICOS INICIAIS (CHART.JS) ---
         function initCharts() {
             const ctxPat = document.getElementById('patrimonioChart').getContext('2d');
             new Chart(ctxPat, {
@@ -785,6 +696,7 @@
                 }
             });
 
+            // GRÁFICO DE PROVENTOS COM ANIMAÇÃO SUAVE DE BAIXO PARA CIMA (EIXO Y TRAVADO NO ZERO)
             const ctxProv = document.getElementById('proventosChart').getContext('2d');
             new Chart(ctxProv, {
                 type: 'bar',
@@ -794,23 +706,21 @@
                         label: 'Proventos (R$)',
                         data: [350, 420, 290, 580, 410, 590],
                         backgroundColor: '#10b981',
-                        borderRadius: 4
+                        borderRadius: 6
                     }]
                 },
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false, 
                     animation: {
-                        y: {
-                            duration: 1000,
-                            easing: 'easeOutQuart'
-                        }
+                        duration: 1200,
+                        easing: 'easeOutQuart'
                     },
                     plugins: { legend: { display: false } }, 
                     scales: { 
                         x: { grid: { display: false } }, 
                         y: { 
-                            beginAtZero: true, // Isso trava a base do gráfico no chão!
+                            beginAtZero: true, 
                             grid: { color: 'rgba(51, 65, 85, 0.2)' } 
                         } 
                     } 
@@ -818,12 +728,10 @@
             });
         }
 
-        // --- CONTROLE DO MODAL DE APORTE ---
         function openAporteModal() {
             const modal = document.getElementById('modalAporte');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            // Pequeno delay para a animação de escala funcionar
             setTimeout(() => modal.firstElementChild.classList.remove('scale-95'), 10);
         }
 
@@ -837,14 +745,12 @@
         }
     </script>
 
-    <!-- FIREBASE - INTEGRAÇÃO REAL -->
+    <!-- FIREBASE - LOGIN E BANCO DE DADOS -->
     <script type="module">
-        // Importando as ferramentas reais do Firebase direto do Google
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // AS SUAS CHAVES REAIS
         const firebaseConfig = {
             apiKey: "AIzaSyC9XEg9qpxOjANBUikDf7FdoNCDjXqZO1c",
             authDomain: "hellob3.firebaseapp.com",
@@ -855,7 +761,6 @@
             measurementId: "G-0EBTQFYT3C"
         };
 
-        // Inicializa o Motor do Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -864,51 +769,37 @@
         const btnLogin = document.getElementById('btnLogin');
         const userProfile = document.getElementById('userProfile');
 
-        // Função que altera a tela quando a pessoa loga
         function updateUIForUser(user) {
             if (user) {
                 btnLogin.classList.add('hidden');
                 userProfile.classList.remove('hidden');
-                
-                // Puxa a foto e o nome REAIS da conta Google do usuário
                 document.getElementById('userAvatar').src = user.photoURL || 'https://ui-avatars.com/api/?name=User';
                 document.getElementById('userAvatarLarge').src = user.photoURL || 'https://ui-avatars.com/api/?name=User';
-                
-                // Pega só o primeiro nome
                 const firstName = user.displayName ? user.displayName.split(' ')[0] : 'Investidor';
                 document.getElementById('userName').innerText = firstName;
                 document.getElementById('userNameLarge').innerText = user.displayName || 'Investidor';
                 document.getElementById('userEmail').innerText = user.email;
-                
-                console.log("Usuário logado:", user.uid);
             } else {
                 btnLogin.classList.remove('hidden');
                 userProfile.classList.add('hidden');
             }
         }
 
-        // Fica de olho! Se o usuário der F5 na página, ele continua logado!
         onAuthStateChanged(auth, (user) => {
             updateUIForUser(user);
         });
 
-        // O clique no botão Entrar
         window.loginGoogle = () => {
-            // Efeito de carregamento
             btnLogin.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span class="hidden sm:inline ml-2">Aguarde...</span>';
-            
-            // Chama a janela real do Google
             signInWithPopup(auth, provider)
                 .then((result) => {
                     updateUIForUser(result.user);
                 }).catch((error) => {
                     console.error("Erro no login:", error);
                     btnLogin.innerHTML = '<i class="fa-brands fa-google"></i><span class="hidden sm:inline ml-2">Entrar</span>';
-                    // Se der erro, geralmente é porque o Firebase Console não foi configurado (veja os passos abaixo)
                 });
         };
 
-        // O clique em Sair da Conta
         window.logoutGoogle = () => {
             signOut(auth).then(() => {
                 updateUIForUser(null);
@@ -918,12 +809,10 @@
             });
         };
 
-        // Função global para salvar o aporte no banco de dados (Firestore)
         window.salvarAporte = async () => {
             const user = auth.currentUser;
             const btnSalvar = document.querySelector('button[onclick="salvarAporte()"]');
             
-            // Validação de Login
             if (!user) {
                 btnSalvar.innerText = "Faça Login Primeiro!";
                 btnSalvar.classList.replace('bg-accentGreen', 'bg-accentRed');
@@ -938,7 +827,6 @@
             const qtd = parseInt(document.getElementById('aporteQtd').value);
             const preco = parseFloat(document.getElementById('aportePreco').value);
 
-            // Validação de Campos Vázios
             if (!ticker || !qtd || !preco) {
                 btnSalvar.innerText = "Preencha todos os campos!";
                 btnSalvar.classList.replace('bg-accentGreen', 'bg-amber-500');
@@ -949,37 +837,30 @@
                 return;
             }
 
-            // Inicia animação visual de carregamento
             btnSalvar.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Salvando na nuvem...';
 
             try {
-                // Criação do Documento no Banco de Dados
-                // Cria a pasta "carteiras" > ID_DO_USUARIO > "ativos" > NOME_DO_TICKER
                 const ativoRef = doc(db, "carteiras", user.uid, "ativos", ticker);
-                
                 await setDoc(ativoRef, {
                     ticker: ticker,
                     quantidade: qtd,
                     precoMedio: preco,
                     dataAporte: new Date()
-                }, { merge: true }); // Merge = Atualiza se já existir, cria se não existir
+                }, { merge: true });
 
-                // Feedback visual de Sucesso
                 btnSalvar.classList.replace('bg-accentGreen', 'bg-brandBlue');
                 btnSalvar.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Salvo com Sucesso!';
                 
                 setTimeout(() => {
                     closeAporteModal();
-                    // Reseta o botão e os campos
                     btnSalvar.classList.replace('bg-brandBlue', 'bg-accentGreen');
                     btnSalvar.innerText = "Salvar na Carteira";
                     document.getElementById('aporteTicker').value = '';
                     document.getElementById('aporteQtd').value = '';
                     document.getElementById('aportePreco').value = '';
                 }, 1500);
-                
             } catch (error) {
-                console.error("Erro crítico ao salvar:", error);
+                console.error("Erro ao salvar:", error);
                 btnSalvar.innerText = "Falha ao Conectar!";
                 btnSalvar.classList.replace('bg-accentGreen', 'bg-accentRed');
                 setTimeout(() => {
