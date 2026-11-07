@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HelloB3 - Plataforma de Investimentos</title>
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0b0f19',
+                        cardBg: '#131c2e',
+                        cardHover: '#1e293b',
+                        accentGreen: '#10b981',
+                        accentRed: '#ef4444',
+                        brandBlue: '#3b82f6',
+                        brandDarkBlue: '#1e3a8a'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js para Gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* --- ANIMAÇÕES --- */
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-marquee { display: inline-block; white-space: nowrap; animation: marquee 30s linear infinite; padding-right: 100%; }
+
+        /* --- MODO WALL STREET (RGB EXTREMO & CYBERPUNK) --- */
+        @keyframes rgbBorder {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; } /* Looping infinito e suave */
+        }
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 40px; }
+        }
+        body.wall-street-mode {
+            background-color: #050505;
+            color: #fff;
+            /* Fundo dinâmico (Grid Cyberpunk em movimento) */
+            background-image: 
+                linear-gradient(rgba(0, 255, 213, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 213, 0.07) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridMove 3s linear infinite;
+        }
+        body.wall-street-mode .bg-cardBg {
+            background-color: #09090b !important;
+            border: none !important;
+            position: relative;
+            z-index: 1;
+            box-shadow: none !important;
+        }
+        /* Borda RGB giratória (Loop infinito) */
+        body.wall-street-mode .bg-cardBg::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(90deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 200% auto;
+            z-index: -1;
+            border-radius: inherit;
+            animation: rgbBorder 4s linear infinite;
+        }
+        /* Brilho RGB espalhado (Glow) */
+        body.wall-street-mode .bg-cardBg::after {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(90deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 200% auto;
+            z-index: -2;
+            filter: blur(15px);
+            opacity: 0.7;
+            border-radius: inherit;
+            animation: rgbBorder 4s linear infinite;
+        }
+        /* Textos legíveis com brilho Neon */
+        body.wall-street-mode h1, body.wall-street-mode h2, body.wall-street-mode h3 {
+            color: #fff !important;
+            text-shadow: 0 0 12px rgba(0, 255, 213, 0.6);
+            background: none !important;
+            -webkit-text-fill-color: initial !important;
+            animation: none !important;
+        }
+        body.wall-street-mode header {
+            background-color: rgba(5, 5, 5, 0.95);
+            border-bottom: 1px solid #00ffd5;
+            box-shadow: 0 0 20px rgba(0, 255, 213, 0.15);
+        }
+        body.wall-street-mode button.bg-brandBlue {
+            background: linear-gradient(90deg, #ff00c8, #7a00ff, #002bff, #ff00c8);
+            background-size: 200% auto;
+            animation: rgbBorder 3s linear infinite;
+            border: none;
+            color: #fff !important;
+            box-shadow: 0 0 15px rgba(122, 0, 255, 0.5);
+        }
+        body.wall-street-mode #ticker-tape {
+            background-color: #000;
+            border-bottom: 1px solid #222;
+            color: #00ffd5;
+            text-shadow: 0 0 10px rgba(0, 255, 213, 0.5);
+        }
+
+        /* --- ACESSIBILIDADE --- */
+        body.high-contrast { background-color: #000; }
+        body.high-contrast .bg-cardBg { background-color: #000; border: 2px solid #fff; box-shadow: none; }
+        body.high-contrast .text-slate-400, body.high-contrast .text-slate-300 { color: #ddd !important; }
+        body.high-contrast h1, body.high-contrast h2, body.high-contrast h3, body.high-contrast span { color: #fff !important; }
+
+        body.large-text { font-size: 110%; }
+        body.large-text h1 { font-size: 2.2rem; }
+        body.large-text h2 { font-size: 1.5rem; }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 min-h-screen flex flex-col antialiased selection:bg-brandBlue selection:text-white">
+
+    <!-- TICKER TAPE (EXIBIDO APENAS NO MODO WALL STREET) -->
+    <div id="ticker-tape" class="hidden w-full overflow-hidden py-2.5 z-[60] relative">
+        <div class="animate-marquee font-mono text-sm font-bold flex space-x-12">
+            <span>IBOVESPA 128.450 <span class="text-accentGreen">▲ +0.82%</span></span>
+            <span>PETR4 R$ 38,40 <span class="text-accentGreen">▲ +1.45%</span></span>
+            <span>VALE3 R$ 68,20 <span class="text-accentRed">▼ -0.85%</span></span>
+            <span>MGLU3 R$ 1,85 <span class="text-accentRed">▼ -3.12%</span></span>
+            <span>ITUB4 R$ 33,10 <span class="text-accentGreen">▲ +1.15%</span></span>
+            <span>BBDC4 R$ 13,40 <span class="text-accentGreen">▲ +0.50%</span></span>
+            <span>WEGE3 R$ 42,50 <span class="text-accentGreen">▲ +2.10%</span></span>
+            <span>USD/BRL R$ 5,42 <span class="text-accentRed">▼ -0.34%</span></span>
+        </div>
+    </div>
+
+    <!-- BARRA DE NAVEGAÇÃO SUPERIOR -->
+    <header class="bg-cardBg border-b border-slate-800 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            
+            <!-- Logo e Nome Atualizados -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brandBlue to-accentGreen flex items-center justify-center shadow-md shadow-brandBlue/20">
+                    <i class="fa-solid fa-chart-line text-white text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl font-extrabold tracking-tight text-white">Hello<span class="text-accentGreen">B3</span></span>
+                        <span class="bg-emerald-500/10 border border-emerald-500/30 text-accentGreen text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider hidden sm:inline-block">hellob3.com.br</span>
+                    </div>
+                    <span class="block text-[10px] text-slate-400 font-medium uppercase tracking-wider">Plataforma de Investimentos</span>
+                </div>
+            </div>
+
+            <!-- Menu Desktop -->
+            <nav class="hidden md:flex items-center space-x-1">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium transition-all bg-brandBlue/20 text-brandBlue border border-brandBlue/30">
+                    <i class="fa-solid fa-wallet mr-2"></i> Minha Carteira
+                </button>
+                <button onclick="switchTab('proventos')" id="nav-proventos" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                    <i class="fa-solid fa-calendar-days mr-2"></i> Proventos
+                </button>
+                <button onclick="switchTab('indicadores')" id="nav-indicadores" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                    <i class="fa-solid fa-magnifying-glass-chart mr-2"></i> Buscador de Ativos
+                </button>
+            </nav>
+
+            <!-- Ações Direitas / Busca / Configs / Perfil -->
+            <div class="flex items-center space-x-3">
+                
+                <!-- Busca Inteligente com Autocomplete -->
+                <div class="relative hidden sm:flex items-center bg-slate-900 border border-slate-700/60 rounded-xl px-3 py-1.5 focus-within:border-brandBlue transition">
+                    <i class="fa-solid fa-search text-slate-400 text-sm mr-2"></i>
+                    <input type="text" id="globalSearchInput" onkeyup="handleSearchAutocomplete(event)" placeholder="Buscar Magalu, PETR4..." class="bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none w-40 lg:w-56" autocomplete="off">
+                    
+                    <!-- Div de Sugestões (Dropdown) -->
+                    <div id="search-suggestions" class="absolute top-full left-0 mt-2 w-full bg-slate-800 border border-slate-700 rounded-xl shadow-2xl hidden flex-col overflow-hidden max-h-64 overflow-y-auto z-[70]">
+                        <!-- Itens preenchidos via JS -->
+                    </div>
+                </div>
+
+                <!-- Botão e Dropdown de Configurações -->
+                <div class="relative">
+                    <button onclick="toggleDropdown('settings-dropdown', event)" class="w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition border border-slate-700">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                    <div id="settings-dropdown" class="absolute right-0 top-full mt-2 w-64 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl hidden z-[70] p-4 dropdown-menu">
+                        <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-700 pb-2">Preferências e Acessibilidade</h4>
+                        <div class="space-y-4">
+                            <!-- Toggle Wall Street -->
+                            <label class="flex items-center justify-between cursor-pointer group">
+                                <span class="text-sm text-white font-medium group-hover:text-amber-400 transition">Modo Wall Street <i class="fa-solid fa-bolt text-amber-400 ml-1"></i></span>
+                                <input type="checkbox" onchange="toggleWallStreet(this)" class="sr-only peer">
+                                <div class="w-10 h-5 bg-slate-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all relative"></div>
+                            </label>
+                            <!-- Toggle Alto Contraste -->
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-sm text-white font-medium">Alto Contraste</span>
+                                <input type="checkbox" onchange="toggleHighContrast(this)" class="sr-only peer">
+                                <div class="w-10 h-5 bg-slate-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-brandBlue after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all relative"></div>
+                            </label>
+                            <!-- Toggle Texto Grande -->
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-sm text-white font-medium">Aumentar Texto</span>
+                                <input type="checkbox" onchange="toggleLargeText(this)" class="sr-only peer">
+                                <div class="w-10 h-5 bg-slate-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-brandBlue after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all relative"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Autenticação e Perfil -->
+                <div class="relative pl-2 border-l border-slate-700 flex items-center">
+                    
+                    <!-- Botão Entrar (Visitante) -->
+                    <button id="btnLogin" onclick="loginGoogle()" class="flex items-center space-x-2 px-4 py-2 bg-brandBlue hover:bg-blue-600 text-white rounded-xl font-semibold transition shadow-lg shadow-brandBlue/30">
+                        <i class="fa-brands fa-google"></i>
+                        <span class="hidden sm:inline">Entrar</span>
+                    </button>
+
+                    <!-- Botão e Dropdown de Perfil (Logado) -->
+                    <div id="userProfile" class="hidden relative">
+                        <button onclick="toggleDropdown('profile-dropdown', event)" class="flex items-center space-x-2 text-left cursor-pointer hover:opacity-80 transition">
+                            <img id="userAvatar" src="" class="w-9 h-9 rounded-xl shadow border border-slate-600" alt="Avatar">
+                            <div class="hidden lg:block text-xs">
+                                <span id="userName" class="block font-semibold text-white">Carregando...</span>
+                                <span class="block text-slate-400 text-[10px]">Plano Gratuito</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-slate-500 text-xs hidden sm:block ml-1"></i>
+                        </button>
+                        <div id="profile-dropdown" class="absolute right-0 top-full mt-2 w-64 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl hidden z-[70] overflow-hidden dropdown-menu">
+                            <div class="p-4 border-b border-slate-700 flex items-center space-x-3 bg-slate-900/50">
+                                <img id="userAvatarLarge" src="" class="w-11 h-11 rounded-full border-2 border-slate-700" alt="Avatar">
+                                <div class="overflow-hidden">
+                                    <span id="userNameLarge" class="block text-sm font-bold text-white truncate"></span>
+                                    <span id="userEmail" class="block text-[11px] text-slate-400 truncate"></span>
+                                </div>
+                            </div>
+                            <div class="p-2 space-y-1">
+                                <button disabled class="w-full text-left px-3 py-2 text-sm text-slate-500 bg-slate-900/50 rounded-lg flex items-center opacity-50 cursor-not-allowed border border-slate-700/50">
+                                    <i class="fa-solid fa-lock text-slate-500 w-6 text-center"></i> PRO (Em breve)
+                                </button>
+                                <div class="my-1 border-t border-slate-700"></div>
+                                <button onclick="logoutGoogle()" class="w-full text-left px-3 py-2 text-sm text-rose-400 hover:bg-rose-500/10 rounded-lg transition flex items-center">
+                                    <i class="fa-solid fa-arrow-right-from-bracket w-6 text-center"></i> Sair da Conta
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- BANNER DE ANÚNCIO (ADSENSE) -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <div class="w-full bg-slate-900/60 border border-dashed border-slate-700 rounded-xl p-2 flex items-center justify-between text-xs text-slate-400">
+            <div class="flex items-center space-x-2">
+                <span class="bg-slate-800 text-slate-300 font-bold px-2 py-1 rounded text-[9px] tracking-widest uppercase border border-slate-700">AdSense Ad</span>
+                <span class="hidden sm:inline">Anúncio responsivo no topo • Mantém a plataforma gratuita</span>
+            </div>
+            <i class="fa-solid fa-info-circle text-slate-500 cursor-pointer hover:text-white"></i>
+        </div>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        <!-- COLUNA CENTRAL -->
+        <div class="lg:col-span-3 space-y-6">
+
+            <!-- ABA 1: DASHBOARD -->
+            <div id="tab-dashboard" class="tab-content space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-cardBg border border-slate-800 p-5 rounded-2xl shadow-xl transition-all">
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold text-white flex items-center">
+                            Visão Geral da Carteira <span class="ml-3 text-[10px] font-bold bg-emerald-500/10 text-accentGreen border border-accentGreen/20 px-2 py-1 rounded-full uppercase tracking-wide">Mercado Aberto</span>
+                        </h1>
+                        <p class="text-slate-400 text-sm mt-1">Acompanhe seu patrimônio consolidado e rentabilidade.</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="openAporteModal()" class="bg-brandBlue hover:bg-blue-600 text-white font-medium text-sm px-4 py-2.5 rounded-xl transition flex items-center shadow-lg shadow-brandBlue/30">
+                            <i class="fa-solid fa-plus mr-2"></i> Novo Aporte
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Cards -->
+                    <div class="bg-cardBg border border-slate-800 p-5 rounded-2xl shadow-lg relative overflow-hidden group">
+                        <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Patrimônio Total</span>
+                        <h3 class="text-2xl font-bold text-white mt-1" id="totalPatrimonio">R$ 84.550,00</h3>
+                        <div class="flex items-center mt-2 text-xs text-emerald-400 font-medium">
+                            <i class="fa-solid fa-arrow-trend-up mr-1"></i> +R$ 1.250,00 <span class="text-slate-500 ml-1">este mês</span>
+                        </div>
+                    </div>
+                    <div class="bg-cardBg border border-slate-800 p-5 rounded-2xl shadow-lg relative overflow-hidden group">
+                        <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Investido</span>
+                        <h3 class="text-2xl font-bold text-white mt-1" id="totalInvestido">R$ 72.100,00</h3>
+                        <span class="inline-block mt-2 text-xs text-slate-500 font-medium">Valor de custo na B3</span>
+                    </div>
+                    <div class="bg-cardBg border border-slate-800 p-5 rounded-2xl shadow-lg relative overflow-hidden group">
+                        <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Lucro / Prejuízo</span>
+                        <h3 class="text-2xl font-bold text-accentGreen mt-1" id="totalLucro">+R$ 12.450,00</h3>
+                        <div class="flex items-center mt-2 text-xs text-accentGreen font-bold">
+                            <i class="fa-solid fa-arrow-up mr-1"></i> 17.27%
+                        </div>
+                    </div>
+                    <div class="bg-cardBg border border-slate-800 p-5 rounded-2xl shadow-lg relative overflow-hidden group">
+                        <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Dividend Yield</span>
+                        <h3 class="text-2xl font-bold text-amber-400 mt-1">8.4% <span class="text-xs text-slate-400 font-normal">a.a.</span></h3>
+                        <div class="flex items-center mt-2 text-xs text-amber-400 font-medium">
+                            <i class="fa-solid fa-money-bill-wave mr-1"></i> ~R$ 590,00/mês
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-cardBg border border-slate-800 p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-lg font-bold text-white mb-4">Evolução do Patrimônio</h2>
+                    <div class="h-64 relative w-full">
+                        <canvas id="patrimonioChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 2: PROVENTOS -->
+            <div id="tab-proventos" class="tab-content hidden space-y-6">
+                <div class="bg-cardBg border border-slate-800 p-6 rounded-2xl shadow-xl">
+                    <h1 class="text-2xl font-bold text-white">Proventos Recebidos e Projetados</h1>
+                    <p class="text-slate-400 text-sm mt-1">Acompanhe a sua evolução de renda passiva (Dividendos e JCP).</p>
+                    <div class="h-64 relative w-full mt-6">
+                        <canvas id="proventosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 3: BUSCADOR DE ATIVOS (COM BUSCA INTELIGENTE) -->
+            <div id="tab-indicadores" class="tab-content hidden space-y-6">
+                <div class="bg-cardBg border border-slate-800 p-6 rounded-2xl shadow-xl">
+                    <h1 class="text-2xl font-bold text-white">Buscador de Ações e FIIs</h1>
+                    <p class="text-slate-400 text-sm mt-1">Consulte indicadores fundamentalistas de qualquer empresa da bolsa.</p>
+                    
+                    <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                        <div class="relative flex-grow">
+                            <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-400"></i>
+                            <input type="text" id="assetSearchInput" onkeyup="handleTabSearch(event)" placeholder="Digite o ticker ou nome (ex: Magalu, Itaú, PETR4)..." class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brandBlue transition" autocomplete="off">
+                            <div id="tab-search-suggestions" class="absolute top-full left-0 mt-2 w-full bg-slate-800 border border-slate-700 rounded-xl shadow-2xl hidden flex-col overflow-hidden max-h-64 overflow-y-auto z-[60]">
+                            </div>
+                        </div>
+                        <button onclick="executeTabSearchBtn()" class="bg-brandBlue hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-xl transition shadow-lg">
+                            Consultar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RESULTADO DA CONSULTA DE INDICADORES -->
+                <div id="assetResultContainer" class="bg-cardBg border border-slate-800 p-6 rounded-2xl shadow-xl space-y-6 hidden">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-800 gap-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-14 h-14 rounded-2xl bg-brandBlue/20 border border-brandBlue/40 flex items-center justify-center font-bold text-xl text-brandBlue" id="resTickerSymbol">
+                                --
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-white" id="resCompanyName">--</h2>
+                                <span class="text-xs text-slate-400" id="resSector">Setor: --</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-slate-400 block uppercase font-bold tracking-wider">Cotação Atual</span>
+                            <span class="text-3xl font-bold text-white tracking-tight" id="resPrice">R$ --</span>
+                            <span class="text-sm font-bold block mt-1" id="resVariation">--</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl">
+                            <span class="text-slate-400 text-xs block font-semibold uppercase">P/L</span>
+                            <span class="text-lg font-bold text-white mt-1 block" id="resPL">--</span>
+                        </div>
+                        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl">
+                            <span class="text-slate-400 text-xs block font-semibold uppercase">P/VP</span>
+                            <span class="text-lg font-bold text-white mt-1 block" id="resPVP">--</span>
+                        </div>
+                        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl">
+                            <span class="text-slate-400 text-xs block font-semibold uppercase">Div. Yield</span>
+                            <span class="text-lg font-bold text-amber-400 mt-1 block" id="resDY">--</span>
+                        </div>
+                        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl">
+                            <span class="text-slate-400 text-xs block font-semibold uppercase">ROE</span>
+                            <span class="text-lg font-bold text-white mt-1 block" id="resROE">--</span>
+                        </div>
+                        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl">
+                            <span class="text-slate-400 text-xs block font-semibold uppercase">Margem Líq.</span>
+                            <span class="text-lg font-bold text-white mt-1 block" id="resMargem">--</span>
+                        </div>
+                        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl">
+                            <span class="text-slate-400 text-xs block font-semibold uppercase">Dív. Líq/EBITDA</span>
+                            <span class="text-lg font-bold text-white mt-1 block" id="resDivida">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- COLUNA LATERAL WIDGETS -->
+        <div class="space-y-6">
+            
+            <!-- ANÚNCIO LATERAL -->
+            <div class="bg-cardBg border border-slate-800 p-4 rounded-2xl shadow-lg">
+                <div class="text-[10px] uppercase font-bold text-slate-400 mb-2 flex items-center justify-between">
+                    <span>AdSense / Patrocínio</span>
+                    <i class="fa-solid fa-ad text-brandBlue"></i>
+                </div>
+                <div class="w-full h-64 bg-slate-900 border border-dashed border-slate-700 rounded-xl flex flex-col items-center justify-center p-4 text-center text-slate-500">
+                    <i class="fa-solid fa-rectangle-ad text-3xl mb-2"></i>
+                    <span class="text-xs font-medium">Anúncio Display 300x250</span>
+                </div>
+            </div>
+
+            <!-- MERCADO HOJE -->
+            <div class="bg-cardBg border border-slate-800 p-5 rounded-2xl shadow-lg">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Mercado Hoje (B3)</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/70 border border-slate-800">
+                        <div>
+                            <span class="block text-xs font-bold text-white">IBOVESPA</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-xs font-bold text-white">128.450 pts</span>
+                            <span class="text-[11px] text-accentGreen font-bold">+0.82%</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/70 border border-slate-800">
+                        <div>
+                            <span class="block text-xs font-bold text-white">USD / BRL</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-xs font-bold text-white">R$ 5,42</span>
+                            <span class="text-[11px] text-accentRed font-bold">-0.34%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL DE NOVO APORTE -->
+    <div id="modalAporte" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+        <div class="bg-cardBg border border-slate-700 p-6 rounded-2xl shadow-2xl w-full max-w-md transform scale-95 transition-all duration-200">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white flex items-center"><i class="fa-solid fa-cart-plus text-brandBlue mr-3"></i> Registrar Aporte</h3>
+                <button onclick="closeAporteModal()" class="text-slate-500 hover:text-white transition bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Ativo (Ticker)</label>
+                    <input type="text" id="aporteTicker" placeholder="Ex: PETR4, MXRF11..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brandBlue uppercase transition">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Quantidade</label>
+                        <input type="number" id="aporteQtd" placeholder="Ex: 100" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brandBlue transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Preço Médio (R$)</label>
+                        <input type="number" step="0.01" id="aportePreco" placeholder="Ex: 38.40" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brandBlue transition">
+                    </div>
+                </div>
+                <button onclick="salvarAporte()" class="w-full bg-accentGreen hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition mt-4 shadow-lg shadow-accentGreen/20 flex items-center justify-center">
+                    Salvar na Carteira
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // --- BASE DE DADOS AMPLIADA (COM SEARCH TERMS PARA BUSCA INTELIGENTE) ---
+        const assetDatabase = {
+            // AÇÕES
+            'PETR4': { name: 'Petrobras PN', searchTerms: ['PETR4', 'PETROBRAS', 'PETROLEO'], sector: 'Petróleo, Gás e Biocombustíveis', price: 38.40, var: '+1.45%', pl: 4.82, pvp: 1.12, dy: '14.50%', roe: '23.40%', margem: '28.10%', divida: '0.65x' },
+            'VALE3': { name: 'Vale ON', searchTerms: ['VALE3', 'VALE', 'MINERAÇÃO'], sector: 'Mineração', price: 68.20, var: '-0.85%', pl: 6.10, pvp: 1.35, dy: '9.20%', roe: '18.50%', margem: '24.30%', divida: '0.42x' },
+            'MGLU3': { name: 'Magazine Luiza (Magalu)', searchTerms: ['MGLU3', 'MAGAZINE LUIZA', 'MAGALU', 'VAREJO'], sector: 'Comércio e Varejo', price: 1.85, var: '-3.12%', pl: '-15.40', pvp: 1.05, dy: '0.00%', roe: '-8.50%', margem: '-2.10%', divida: '2.3x' },
+            'ITUB4': { name: 'Itaú Unibanco PN', searchTerms: ['ITUB4', 'ITAU', 'UNIBANCO', 'BANCO'], sector: 'Intermediação Financeira', price: 33.10, var: '+1.15%', pl: 8.80, pvp: 1.65, dy: '6.50%', roe: '21.10%', margem: '15.30%', divida: 'N/A' },
+            'BBDC4': { name: 'Bradesco PN', searchTerms: ['BBDC4', 'BRADESCO', 'BANCO'], sector: 'Intermediação Financeira', price: 13.40, var: '+0.50%', pl: 8.50, pvp: 0.95, dy: '7.10%', roe: '11.20%', margem: '12.40%', divida: 'N/A' },
+            'WEGE3': { name: 'Weg S.A.', searchTerms: ['WEGE3', 'WEG', 'MOTORES'], sector: 'Máquinas e Equipamentos', price: 42.50, var: '+2.10%', pl: 32.40, pvp: 6.80, dy: '2.10%', roe: '28.90%', margem: '17.80%', divida: '-0.05x' },
+            'BBAS3': { name: 'Banco do Brasil ON', searchTerms: ['BBAS3', 'BANCO DO BRASIL', 'BB'], sector: 'Intermediação Financeira', price: 27.90, var: '+0.45%', pl: 4.20, pvp: 0.85, dy: '9.80%', roe: '20.10%', margem: '14.20%', divida: 'N/A' },
+            'ABEV3': { name: 'Ambev ON', searchTerms: ['ABEV3', 'AMBEV', 'CERVEJA'], sector: 'Bebidas', price: 12.30, var: '-1.20%', pl: 14.50, pvp: 2.30, dy: '5.40%', roe: '18.20%', margem: '16.50%', divida: '-0.20x' },
+            'RENT3': { name: 'Localiza ON', searchTerms: ['RENT3', 'LOCALIZA', 'ALUGUEL', 'CARROS'], sector: 'Aluguel de Carros', price: 54.20, var: '+3.10%', pl: 22.10, pvp: 4.10, dy: '2.80%', roe: '16.40%', margem: '8.20%', divida: '2.8x' },
+            'TAEE11': { name: 'Taesa Unit', searchTerms: ['TAEE11', 'TAESA', 'ENERGIA'], sector: 'Energia Elétrica', price: 35.80, var: '+0.15%', pl: 9.80, pvp: 1.80, dy: '10.50%', roe: '24.10%', margem: '45.20%', divida: '3.1x' },
+            'B3SA3': { name: 'B3 S.A.', searchTerms: ['B3SA3', 'B3', 'BOLSA'], sector: 'Serviços Financeiros', price: 11.20, var: '+1.05%', pl: 12.40, pvp: 2.10, dy: '5.80%', roe: '19.50%', margem: '30.10%', divida: '1.2x' },
+            
+            // FIIS
+            'MXRF11': { name: 'Maxi Renda FII', searchTerms: ['MXRF11', 'MAXI RENDA', 'FII', 'FUNDO'], sector: 'Fundo de Papel', price: 10.65, var: '+0.28%', pl: 'N/A', pvp: 1.04, dy: '12.10%', roe: 'N/A', margem: 'N/A', divida: 'N/A' },
+            'HGLG11': { name: 'CSHG Logística FII', searchTerms: ['HGLG11', 'HGLG', 'FII', 'LOGISTICA', 'FUNDO'], sector: 'Fundo de Tijolo (Logística)', price: 165.40, var: '-0.15%', pl: 'N/A', pvp: 1.08, dy: '8.50%', roe: 'N/A', margem: 'N/A', divida: 'N/A' },
+            'GARE11': { name: 'Guardian Logística FII', searchTerms: ['GARE11', 'GUARDIAN', 'FII', 'LOGISTICA'], sector: 'Fundo de Tijolo e Renda', price: 9.12, var: '+0.45%', pl: 'N/A', pvp: 0.98, dy: '10.50%', roe: 'N/A', margem: 'N/A', divida: 'N/A' },
+            'XPML11': { name: 'XP Malls FII', searchTerms: ['XPML11', 'XP', 'MALLS', 'SHOPPING', 'FII'], sector: 'Fundo de Tijolo (Shoppings)', price: 115.20, var: '+0.80%', pl: 'N/A', pvp: 1.02, dy: '8.20%', roe: 'N/A', margem: 'N/A', divida: 'N/A' },
+            'KNRI11': { name: 'Kinea Renda Imobiliária', searchTerms: ['KNRI11', 'KINEA', 'RENDA', 'FII'], sector: 'Fundo Misto', price: 158.90, var: '+0.10%', pl: 'N/A', pvp: 0.98, dy: '7.90%', roe: 'N/A', margem: 'N/A', divida: 'N/A' },
+            'BCFF11': { name: 'BTG Fundo de Fundos', searchTerms: ['BCFF11', 'BTG', 'FOF', 'FII'], sector: 'Fundo de Fundos (FOF)', price: 9.15, var: '-0.50%', pl: 'N/A', pvp: 0.92, dy: '10.20%', roe: 'N/A', margem: 'N/A', divida: 'N/A' }
+        };
+
+        // Inicialização
+        window.onload = function() {
+            initCharts();
+            // Mostrar a primeira aba
+            switchTab('dashboard');
+        };
+
+        // --- SISTEMA DE ABAS ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-brandBlue/20', 'text-brandBlue', 'border', 'border-brandBlue/30');
+                btn.classList.add('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
+            });
+            const activeBtn = document.getElementById('nav-' + tabId);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
+                activeBtn.classList.add('bg-brandBlue/20', 'text-brandBlue', 'border', 'border-brandBlue/30');
+            }
+        }
+
+        // --- DROPDOWNS ---
+        function toggleDropdown(id, event) {
+            if(event) event.stopPropagation();
+            const el = document.getElementById(id);
+            const isHidden = el.classList.contains('hidden');
+            
+            // Fecha todos
+            document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+            
+            // Abre o solicitado
+            if(isHidden) el.classList.remove('hidden');
+        }
+
+        // Fechar dropdowns e suggestions ao clicar fora
+        window.addEventListener('click', function(e) {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+                document.getElementById('search-suggestions').classList.add('hidden');
+                const tabSugg = document.getElementById('tab-search-suggestions');
+                if(tabSugg) tabSugg.classList.add('hidden');
+            }
+        });
+
+        // --- TOGGLES DE CONFIGURAÇÃO (EASTER EGG E ACESSIBILIDADE) ---
+        function toggleWallStreet(checkbox) {
+            document.body.classList.toggle('wall-street-mode', checkbox.checked);
+            const ticker = document.getElementById('ticker-tape');
+            if(checkbox.checked) ticker.classList.remove('hidden');
+            else ticker.classList.add('hidden');
+        }
+
+        function toggleHighContrast(checkbox) {
+            document.body.classList.toggle('high-contrast', checkbox.checked);
+        }
+
+        function toggleLargeText(checkbox) {
+            document.body.classList.toggle('large-text', checkbox.checked);
+        }
+
+        // --- SISTEMA DE BUSCA INTELIGENTE (AUTOCOMPLETE) ---
+        function generateSuggestionsHTML(matches, suggestionsDiv, inputId) {
+            suggestionsDiv.innerHTML = '';
+            if (matches.length > 0) {
+                matches.forEach(ticker => {
+                    const asset = assetDatabase[ticker];
+                    const div = document.createElement('div');
+                    div.className = 'px-4 py-3 hover:bg-slate-700 cursor-pointer text-sm flex justify-between items-center transition border-b border-slate-700/50 last:border-0';
+                    div.innerHTML = `<span class="font-bold text-white">${ticker}</span> <span class="text-slate-400 text-[11px] font-medium">${asset.name}</span>`;
+                    div.onclick = () => {
+                        document.getElementById(inputId).value = ticker;
+                        suggestionsDiv.classList.add('hidden');
+                        executeSearch(ticker);
+                    };
+                    suggestionsDiv.appendChild(div);
+                });
+                suggestionsDiv.classList.remove('hidden');
+            } else {
+                suggestionsDiv.innerHTML = '<div class="px-4 py-4 text-xs text-slate-500 text-center">Nenhum ativo encontrado com esse termo.</div>';
+                suggestionsDiv.classList.remove('hidden');
+            }
+        }
+
+        // Para a barra de pesquisa do Header
+        function handleSearchAutocomplete(e) {
+            const query = e.target.value.toUpperCase().trim();
+            const suggestionsDiv = document.getElementById('search-suggestions');
+            
+            if (!query) { suggestionsDiv.classList.add('hidden'); return; }
+
+            if (e.key === 'Enter') {
+                suggestionsDiv.classList.add('hidden');
+                executeSearch(query);
+                return;
+            }
+
+            const matches = Object.keys(assetDatabase).filter(ticker => 
+                assetDatabase[ticker].searchTerms.some(term => term.includes(query))
+            );
+            generateSuggestionsHTML(matches, suggestionsDiv, 'globalSearchInput');
+        }
+
+        // Para a barra de pesquisa na aba de Indicadores
+        function handleTabSearch(e) {
+            const query = e.target.value.toUpperCase().trim();
+            const suggestionsDiv = document.getElementById('tab-search-suggestions');
+            
+            if (!query) { suggestionsDiv.classList.add('hidden'); return; }
+
+            if (e.key === 'Enter') {
+                suggestionsDiv.classList.add('hidden');
+                executeSearch(query);
+                return;
+            }
+
+            const matches = Object.keys(assetDatabase).filter(ticker => 
+                assetDatabase[ticker].searchTerms.some(term => term.includes(query))
+            );
+            generateSuggestionsHTML(matches, suggestionsDiv, 'assetSearchInput');
+        }
+
+        function executeTabSearchBtn() {
+            const query = document.getElementById('assetSearchInput').value.toUpperCase().trim();
+            if(query) executeSearch(query);
+        }
+
+        // Mapeamento de nomes comuns para Tickers da API
+        const assetMap = {
+            'MAGALU': 'MGLU3', 'MAGAZINE LUIZA': 'MGLU3', 'MAGAZINE': 'MGLU3',
+            'PETROBRAS': 'PETR4', 'PETRÓLEO': 'PETR4',
+            'NUBANK': 'ROXO34', 'ROXO': 'ROXO34',
+            'ITAU': 'ITUB4', 'ITAÚ': 'ITUB4',
+            'VALE': 'VALE3',
+            'WEG': 'WEGE3', 'BBDC': 'BBDC4', 'BRADESCO': 'BBDC4',
+            'BANCO DO BRASIL': 'BBAS3', 'AMBEV': 'ABEV3', 'LOCALIZA': 'RENT3'
+        };
+
+        // Executa a busca real usando API do Yahoo Finance via Proxy Gratuito
+        async function executeSearch(query) {
+            if (!query) return;
+
+            let targetTicker = query;
+            
+            // 1. Tenta mapeamento direto (ex: Magalu -> MGLU3)
+            if (assetMap[query]) {
+                targetTicker = assetMap[query];
+            } else {
+                // 2. Busca nos termos internos se existir
+                const dbMatch = Object.keys(assetDatabase).find(t => 
+                    assetDatabase[t].searchTerms.some(term => term.includes(query))
+                );
+                if (dbMatch) targetTicker = dbMatch;
+            }
+
+            switchTab('indicadores');
+            document.getElementById('assetSearchInput').value = targetTicker; 
+            
+            // Mostra estado de carregamento
+            document.getElementById('assetResultContainer').classList.remove('hidden');
+            document.getElementById('resTickerSymbol').innerText = "⏳";
+            document.getElementById('resCompanyName').innerText = "Consultando Bolsa...";
+            document.getElementById('resSector').innerText = "Aguarde...";
+            document.getElementById('resPrice').innerText = "--";
+            document.getElementById('resVariation').innerText = "";
+            document.getElementById('resPL').innerText = "--";
+            document.getElementById('resDY').innerText = "--";
+            
+            try {
+                // TRUQUE MESTRE: Usamos um proxy gratuito para burlar o CORS e acessar o Yahoo Finance direto do front-end
+                const yahooUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${targetTicker}.SA`;
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(yahooUrl)}`;
+                
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error("Erro na rede do Proxy");
+                
+                const proxyData = await response.json();
+                const data = JSON.parse(proxyData.contents); // O AllOrigins retorna o JSON real dentro de 'contents'
+                
+                // Se o Yahoo encontrou a ação
+                if (data.quoteResponse && data.quoteResponse.result && data.quoteResponse.result.length > 0) {
+                    const result = data.quoteResponse.result[0];
+                    
+                    const price = result.regularMarketPrice || 0;
+                    const bookValue = result.bookValue || 0;
+                    const pvp = bookValue > 0 ? (price / bookValue).toFixed(2) : '--';
+                    
+                    renderAssetData({
+                        ticker: targetTicker,
+                        name: result.longName || result.shortName || targetTicker,
+                        sector: 'Ações B3', 
+                        price: price,
+                        var: result.regularMarketChangePercent ? `${result.regularMarketChangePercent > 0 ? '+' : ''}${result.regularMarketChangePercent.toFixed(2)}%` : '0.00%',
+                        pl: result.trailingPE ? result.trailingPE.toFixed(2) : '--',
+                        pvp: pvp,
+                        dy: result.trailingAnnualDividendYield ? `${(result.trailingAnnualDividendYield * 100).toFixed(2)}%` : '--',
+                        roe: 'PRO', margem: 'PRO', divida: 'PRO' // Deixando um gostinho para o plano pago rs
+                    });
+                    return;
+                }
+                throw new Error("Ativo vazio no Yahoo");
+            } catch (error) {
+                console.log("Recorrendo ao banco de dados interno...", error.message);
+                // FALLBACK PARA O MOCK (Caso a rede caia)
+                if(assetDatabase[targetTicker]) {
+                    const data = assetDatabase[targetTicker];
+                    renderAssetData({ ticker: targetTicker, ...data });
+                } else {
+                    document.getElementById('resTickerSymbol').innerText = "❌";
+                    document.getElementById('resCompanyName').innerText = "Ativo não encontrado ou API indisponível";
+                    document.getElementById('resSector').innerText = "Tente novamente mais tarde.";
+                    document.getElementById('resPrice').innerText = "--";
+                    document.getElementById('resVariation').innerText = "";
+                }
+            }
+        }
+
+        function renderAssetData(data) {
+            document.getElementById('resTickerSymbol').innerText = data.ticker;
+            document.getElementById('resCompanyName').innerText = data.name;
+            document.getElementById('resSector').innerText = `Setor: ${data.sector}`;
+            
+            const p = typeof data.price === 'number' ? data.price.toFixed(2) : data.price;
+            document.getElementById('resPrice').innerText = p.toString().startsWith('R$') ? p : `R$ ${p}`;
+            
+            const varEl = document.getElementById('resVariation');
+            const v = data.var.toString();
+            varEl.innerText = `${v} (Hoje)`;
+            varEl.className = v.includes('-') ? 'text-sm font-bold block mt-1 text-accentRed' : 'text-sm font-bold block mt-1 text-accentGreen';
+            
+            document.getElementById('resPL').innerText = data.pl;
+            document.getElementById('resPVP').innerText = data.pvp;
+            document.getElementById('resDY').innerText = data.dy;
+            document.getElementById('resROE').innerText = data.roe;
+            document.getElementById('resMargem').innerText = data.margem;
+            document.getElementById('resDivida').innerText = data.divida;
+        }
+
+        // --- GRÁFICOS INICIAIS (CHART.JS) ---
+        function initCharts() {
+            const ctxPat = document.getElementById('patrimonioChart').getContext('2d');
+            new Chart(ctxPat, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                    datasets: [{
+                        label: 'Patrimônio',
+                        data: [74000, 76500, 79200, 81000, 83200, 84550],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2, fill: true, tension: 0.4
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } }, 
+                    scales: { 
+                        x: { display: false }, 
+                        y: { display: false, beginAtZero: false } 
+                    } 
+                }
+            });
+
+            const ctxProv = document.getElementById('proventosChart').getContext('2d');
+            new Chart(ctxProv, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                    datasets: [{
+                        label: 'Proventos (R$)',
+                        data: [350, 420, 290, 580, 410, 590],
+                        backgroundColor: '#10b981',
+                        borderRadius: 4
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    animation: {
+                        y: {
+                            duration: 1000,
+                            easing: 'easeOutQuart'
+                        }
+                    },
+                    plugins: { legend: { display: false } }, 
+                    scales: { 
+                        x: { grid: { display: false } }, 
+                        y: { 
+                            beginAtZero: true, // Isso trava a base do gráfico no chão!
+                            grid: { color: 'rgba(51, 65, 85, 0.2)' } 
+                        } 
+                    } 
+                }
+            });
+        }
+
+        // --- CONTROLE DO MODAL DE APORTE ---
+        function openAporteModal() {
+            const modal = document.getElementById('modalAporte');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            // Pequeno delay para a animação de escala funcionar
+            setTimeout(() => modal.firstElementChild.classList.remove('scale-95'), 10);
+        }
+
+        function closeAporteModal() {
+            const modal = document.getElementById('modalAporte');
+            modal.firstElementChild.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 200);
+        }
+    </script>
+
+    <!-- FIREBASE - INTEGRAÇÃO REAL -->
+    <script type="module">
+        // Importando as ferramentas reais do Firebase direto do Google
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // AS SUAS CHAVES REAIS
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9XEg9qpxOjANBUikDf7FdoNCDjXqZO1c",
+            authDomain: "hellob3.firebaseapp.com",
+            projectId: "hellob3",
+            storageBucket: "hellob3.firebasestorage.app",
+            messagingSenderId: "800716646727",
+            appId: "1:800716646727:web:ba5a1f6f011ae74a79c462",
+            measurementId: "G-0EBTQFYT3C"
+        };
+
+        // Inicializa o Motor do Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        const btnLogin = document.getElementById('btnLogin');
+        const userProfile = document.getElementById('userProfile');
+
+        // Função que altera a tela quando a pessoa loga
+        function updateUIForUser(user) {
+            if (user) {
+                btnLogin.classList.add('hidden');
+                userProfile.classList.remove('hidden');
+                
+                // Puxa a foto e o nome REAIS da conta Google do usuário
+                document.getElementById('userAvatar').src = user.photoURL || 'https://ui-avatars.com/api/?name=User';
+                document.getElementById('userAvatarLarge').src = user.photoURL || 'https://ui-avatars.com/api/?name=User';
+                
+                // Pega só o primeiro nome
+                const firstName = user.displayName ? user.displayName.split(' ')[0] : 'Investidor';
+                document.getElementById('userName').innerText = firstName;
+                document.getElementById('userNameLarge').innerText = user.displayName || 'Investidor';
+                document.getElementById('userEmail').innerText = user.email;
+                
+                console.log("Usuário logado:", user.uid);
+            } else {
+                btnLogin.classList.remove('hidden');
+                userProfile.classList.add('hidden');
+            }
+        }
+
+        // Fica de olho! Se o usuário der F5 na página, ele continua logado!
+        onAuthStateChanged(auth, (user) => {
+            updateUIForUser(user);
+        });
+
+        // O clique no botão Entrar
+        window.loginGoogle = () => {
+            // Efeito de carregamento
+            btnLogin.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span class="hidden sm:inline ml-2">Aguarde...</span>';
+            
+            // Chama a janela real do Google
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    updateUIForUser(result.user);
+                }).catch((error) => {
+                    console.error("Erro no login:", error);
+                    btnLogin.innerHTML = '<i class="fa-brands fa-google"></i><span class="hidden sm:inline ml-2">Entrar</span>';
+                    // Se der erro, geralmente é porque o Firebase Console não foi configurado (veja os passos abaixo)
+                });
+        };
+
+        // O clique em Sair da Conta
+        window.logoutGoogle = () => {
+            signOut(auth).then(() => {
+                updateUIForUser(null);
+                document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+            }).catch((error) => {
+                console.error("Erro ao sair:", error);
+            });
+        };
+
+        // Função global para salvar o aporte no banco de dados (Firestore)
+        window.salvarAporte = async () => {
+            const user = auth.currentUser;
+            const btnSalvar = document.querySelector('button[onclick="salvarAporte()"]');
+            
+            // Validação de Login
+            if (!user) {
+                btnSalvar.innerText = "Faça Login Primeiro!";
+                btnSalvar.classList.replace('bg-accentGreen', 'bg-accentRed');
+                setTimeout(() => {
+                    btnSalvar.innerText = "Salvar na Carteira";
+                    btnSalvar.classList.replace('bg-accentRed', 'bg-accentGreen');
+                }, 3000);
+                return;
+            }
+
+            const ticker = document.getElementById('aporteTicker').value.toUpperCase().trim();
+            const qtd = parseInt(document.getElementById('aporteQtd').value);
+            const preco = parseFloat(document.getElementById('aportePreco').value);
+
+            // Validação de Campos Vázios
+            if (!ticker || !qtd || !preco) {
+                btnSalvar.innerText = "Preencha todos os campos!";
+                btnSalvar.classList.replace('bg-accentGreen', 'bg-amber-500');
+                setTimeout(() => {
+                    btnSalvar.innerText = "Salvar na Carteira";
+                    btnSalvar.classList.replace('bg-amber-500', 'bg-accentGreen');
+                }, 3000);
+                return;
+            }
+
+            // Inicia animação visual de carregamento
+            btnSalvar.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Salvando na nuvem...';
+
+            try {
+                // Criação do Documento no Banco de Dados
+                // Cria a pasta "carteiras" > ID_DO_USUARIO > "ativos" > NOME_DO_TICKER
+                const ativoRef = doc(db, "carteiras", user.uid, "ativos", ticker);
+                
+                await setDoc(ativoRef, {
+                    ticker: ticker,
+                    quantidade: qtd,
+                    precoMedio: preco,
+                    dataAporte: new Date()
+                }, { merge: true }); // Merge = Atualiza se já existir, cria se não existir
+
+                // Feedback visual de Sucesso
+                btnSalvar.classList.replace('bg-accentGreen', 'bg-brandBlue');
+                btnSalvar.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Salvo com Sucesso!';
+                
+                setTimeout(() => {
+                    closeAporteModal();
+                    // Reseta o botão e os campos
+                    btnSalvar.classList.replace('bg-brandBlue', 'bg-accentGreen');
+                    btnSalvar.innerText = "Salvar na Carteira";
+                    document.getElementById('aporteTicker').value = '';
+                    document.getElementById('aporteQtd').value = '';
+                    document.getElementById('aportePreco').value = '';
+                }, 1500);
+                
+            } catch (error) {
+                console.error("Erro crítico ao salvar:", error);
+                btnSalvar.innerText = "Falha ao Conectar!";
+                btnSalvar.classList.replace('bg-accentGreen', 'bg-accentRed');
+                setTimeout(() => {
+                    btnSalvar.innerText = "Salvar na Carteira";
+                    btnSalvar.classList.replace('bg-accentRed', 'bg-accentGreen');
+                }, 3000);
+            }
+        };
+    </script>
+</body>
+</html>
